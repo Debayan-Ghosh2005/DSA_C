@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 struct Node {
     int coefficient;
     int exponent;
     struct Node* next;
 };
+
 struct Node* createNode(int coeff, int exp) {
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->coefficient = coeff;
@@ -12,7 +14,9 @@ struct Node* createNode(int coeff, int exp) {
     newNode->next = NULL;
     return newNode;
 }
+
 void insertNode(struct Node** poly, int coeff, int exp) {
+    if (coeff == 0) return; 
     struct Node* newNode = createNode(coeff, exp);
     if (*poly == NULL) {
         *poly = newNode;
@@ -24,16 +28,26 @@ void insertNode(struct Node** poly, int coeff, int exp) {
         temp->next = newNode;
     }
 }
+
 void displayPoly(struct Node* poly) {
+    int first = 1;
     while (poly != NULL) {
-        printf("%dx^%d", poly->coefficient, poly->exponent);
-        poly = poly->next;
-        if (poly != NULL) {
-            printf(" + ");
+        if (poly->coefficient != 0) {  
+            if (!first) printf(" + ");
+            if (poly->exponent == 0) {
+                printf("%d", poly->coefficient); 
+            } else if (poly->exponent == 1) {
+                printf("%dx", poly->coefficient); 
+            } else {
+                printf("%dx^%d", poly->coefficient, poly->exponent); 
+            }
+            first = 0;
         }
+        poly = poly->next;
     }
     printf("\n");
 }
+
 struct Node* addPolynomials(struct Node* poly1, struct Node* poly2) {
     struct Node* result = NULL;
     while (poly1 != NULL && poly2 != NULL) {
@@ -45,9 +59,7 @@ struct Node* addPolynomials(struct Node* poly1, struct Node* poly2) {
             poly2 = poly2->next;
         } else {
             int sumCoeff = poly1->coefficient + poly2->coefficient;
-            if (sumCoeff != 0) { 
-                insertNode(&result, sumCoeff, poly1->exponent);
-            }
+            insertNode(&result, sumCoeff, poly1->exponent); 
             poly1 = poly1->next;
             poly2 = poly2->next;
         }
@@ -63,6 +75,7 @@ struct Node* addPolynomials(struct Node* poly1, struct Node* poly2) {
 
     return result;
 }
+
 void inputPolynomial(struct Node** poly) {
     int n, coeff, exp;
     printf("Enter the number of terms in the polynomial: ");
@@ -74,20 +87,28 @@ void inputPolynomial(struct Node** poly) {
         insertNode(poly, coeff, exp);
     }
 }
+
 int main() {
     struct Node* poly1 = NULL;
     struct Node* poly2 = NULL;
     struct Node* sum = NULL;
+    
     printf("Input the first polynomial:\n");
     inputPolynomial(&poly1);
+    
     printf("Input the second polynomial:\n");
     inputPolynomial(&poly2);
+    
     printf("First Polynomial: ");
     displayPoly(poly1);
+    
     printf("Second Polynomial: ");
     displayPoly(poly2);
+    
     sum = addPolynomials(poly1, poly2);
+    
     printf("Sum of the Polynomials: ");
     displayPoly(sum);
+    
     return 0;
 }
